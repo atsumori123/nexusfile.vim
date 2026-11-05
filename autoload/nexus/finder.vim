@@ -95,6 +95,7 @@ function! s:change_cache(direction) abort
 	let start_dir = substitute(start_dir, '%', sep, 'g')
 
 	call s:finder_init(start_dir, v:true)
+	call nexus#utils#stop_debounce_timer()
 	call nexus#finder#update("")
 endfunction
 
@@ -274,6 +275,10 @@ function! nexus#finder#update(cond) abort
 				for char_idx in b:F.pos_list[i]
 					" 文字インデックス(0始まり)をバイトインデックス(1始まり)に変換
 					call add(pos_group, [i + 5, (byteidx(text, char_idx) + 1), 1])
+					if len(pos_group) == 8 && v:version < 900
+						call matchaddpos('NXMatch', pos_group)
+						let pos_group = []
+					endif
 				endfor
 			endfor
 			if !empty(pos_group)

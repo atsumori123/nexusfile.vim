@@ -180,6 +180,10 @@ function! nexus#mru#update(cond) abort
 				for char_idx in b:M.pos_list[i]
 					" 文字インデックス(0始まり)をバイトインデックス(1始まり)に変換
 					call add(pos_group, [i + 5, (byteidx(text, char_idx) + 1), 1])
+					if len(pos_group) == 8 && v:version < 900
+						call matchaddpos('NXMatch', pos_group)
+						let pos_group = []
+					endif
 				endfor
 			endfor
 			if !empty(pos_group)
